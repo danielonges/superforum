@@ -1,5 +1,4 @@
 Name: Daniel Ong Ee Shaeon
-Matriculation Number: A0205365J
 
 Additional Features:
 
