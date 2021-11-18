@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>
+            <ui:insert name="title">Title</ui:insert>
+        </title>
+    </h:head>
+    <h:form id="form">
+        <p:growl id="messages"/>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+        </p:confirmDialog> 
+        <p:menubar style="padding: 10px; height: 55px">
+            <p:submenu label="SuperForum" >
+                <p:menuitem value="Home" url="/SuperForum-war/index.xhtml" icon="pi pi-home"/>
+                <p:separator />
+                <p:menuitem value="My Profile" url="/SuperForum-war/user-profile.xhtml" icon="pi pi-user">
+                    <f:param name="userId" value="#{authenticationManagedBean.userId}"/>
+                </p:menuitem>
+                <p:separator/>
+                <p:menuitem value="Manage Users" url="/SuperForum-war/manage-users.xhtml" icon="pi pi-users" rendered="#{authenticationManagedBean.authenticateRequest(null)}"/>
+                <p:separator rendered="#{authenticationManagedBean.authenticateRequest(null)}"/>
+                <p:menuitem value="Logout" action="#{authenticationManagedBean.logout}" icon="pi pi-sign-out"/>
+            </p:submenu>
+            <p:submenu label="Forums">
+                <c:forEach var="forumCategory" items="#{forumManagedBean.allForumCategories}">
+                    <p:menuitem value="#{forumCategory.category}" url="/SuperForum-war/forum/forum-category.xhtml">
+                        <f:param name="forum-category" value="#{forumCategory.category}"/>
+                    </p:menuitem>
+                    <p:separator />
+                </c:forEach>
+                <p:menuitem value="Add category" icon="pi pi-plus" rendered="#{authenticationManagedBean.authenticateRequest(null)}" onclick="PF('dlg').show();"/>
+            </p:submenu>
+            <f:facet name="options">
+                <p:outputLabel value="Admin User" style="margin: 0px 10px; font-style: italic" rendered="#{authenticationManagedBean.authenticateRequest(null)}"/>
+                <p:inputText style="margin:1px 10px 1px 1px;" placeholder="Search forums" value="#{forumManagedBean.searchField}"/>
+                <p:commandButton value="Search" icon="pi pi-search" action="#{forumManagedBean.searchForums()}" ajax="false"/>
+            </f:facet>
+        </p:menubar>
+        <p:dialog header="Add category" widgetVar="dlg" showEffect="fade" hideEffect="fade" minHeight="100">
+            <h:panelGrid columns="2" cellpadding="5">
+                <p:outputLabel for="category-input" value="Category" />
+                <p:inputText id="category-input" value="#{forumManagedBean.forumCategory}" />
+            </h:panelGrid>
+            <p:commandButton value="Add category" action="#{forumManagedBean.createForumCategory}" update=":form"/>
+        </p:dialog>
+    </h:form>
+    <h:body>
+        <div id="content" class="left_content" >
+            <ui:insert name="content">Content</ui:insert>
+        </div>
+    </h:body>
+
+</html>

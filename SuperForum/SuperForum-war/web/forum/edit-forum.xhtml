@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="../layout/default-auth.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="title">
+        Edit Forum
+    </ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="fId" value="#{forumManagedBean.currentForumId}"/>
+            <f:event type="preRenderView" listener="#{forumManagedBean.loadCurrentForum}"/>
+            <f:event type="preRenderView" listener="#{forumManagedBean.loadForumDetails}"/>
+        </f:metadata>
+        <h:form id="edit-forum-form">
+            <p:outputPanel style="padding: 0px 10px">
+                <p:breadCrumb lastItemDisabled="true">
+                    <p:menuitem value="Forums" url="/SuperForum-war/index.xhtml"/>
+                    <p:menuitem value="#{forumManagedBean.currentForum.title}" url="forum.xhtml">
+                        <f:param name="fId" value="#{forumManagedBean.currentForumId}"/>
+                    </p:menuitem>    
+                    <p:menuitem value="Edit Forum" url="/SuperForum-war/index.xhtml"/>
+                </p:breadCrumb>
+                <p:fieldset legend="Edit #{forumManagedBean.currentForum.title}" style="margin: 10px 0px">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <p:outputLabel value="Title: " for="@next"/>
+                        <p:inputText value="#{forumManagedBean.title}"/>
+                        <p:outputLabel value="Description: " for="@next"/>
+                        <p:inputText value="#{forumManagedBean.description}"/>
+                        <p:outputLabel value="Category: " for="@next"/>
+                        <p:selectOneMenu value="#{forumManagedBean.forumCategory}" editable="true">
+                            <c:forEach var="forumCategory" items="#{forumManagedBean.allForumCategories}">
+                                <f:selectItem itemLabel="#{forumCategory.category}" itemValue="#{forumCategory.category}"/>
+                            </c:forEach>
+                        </p:selectOneMenu>
+                        <p:commandButton value="Update Forum" icon="pi pi-pencil" 
+                                         action="#{forumManagedBean.updateForum}">
+                            <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumManagedBean.adminId}"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:fieldset>
+            </p:outputPanel>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

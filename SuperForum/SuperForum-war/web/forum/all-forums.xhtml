@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="../layout/default-auth.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">
+        All Forums
+    </ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="searchParam" value="#{forumManagedBean.searchField}"/>
+            <f:event type="preRenderView" listener="#{forumManagedBean.loadSearchedForums}"/>
+        </f:metadata>
+        <style type="text/css">
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 5px 25px 25px;
+                /* with the exported variables from Nova and Luna Themes*/
+                border-bottom-color: var(--input-border-color, #A8A8A8);
+            }
+        </style>
+        <h:form>
+            <p:outputPanel>
+                <p:dataView var="forum" value="#{forumManagedBean.forums}" layout="list" rows="6" paginatorAlwaysVisible="false" paginator="true">
+                    <f:facet name="header" >
+                        <h:outputText value="All forum titles containing \'#{forumManagedBean.searchField}\'"/>
+                    </f:facet>
+                    <p:dataViewListItem>
+                        <p:outputPanel>
+                            <h2>
+                                <p:link value="#{forum.title}" outcome="/forum/forum.xhtml">
+                                    <f:param name="fId" value="#{forum.id}" />
+                                </p:link>
+                            </h2>
+                            <h:outputText value="#{forum.owner.username}" style="font-style: italic; font-size: 0.9em"/>
+                            <h:panelGrid columns="2" cellpadding="5" style="font-size: 1em; margin-top: 5px">
+                                <h:outputText value="Category: " />
+                                <p:link value="#{forum.forumCategory.category}" outcome="/forum/forum-category.xhtml">
+                                    <f:param name="forum-category" value="#{forum.forumCategory.category}" />
+                                </p:link>
+                                <h:outputText value="Description: " />
+                                <h:outputText value="#{forum.description}" />     
+                            </h:panelGrid>
+                        </p:outputPanel>
+                    </p:dataViewListItem>
+                </p:dataView>
+            </p:outputPanel>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="../layout/default-auth.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="title">
+        Edit Thread
+    </ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="threadId" value="#{forumThreadManagedBean.currentThreadId}"/>
+            <f:viewParam name="forumId" value="#{forumThreadManagedBean.forumId}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.loadForum}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.loadCurrentForumThread}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.loadForumThreadDetails}"/>
+        </f:metadata>
+        <h:form id="edit-thread-form">
+            <p:growl id ="growl" showDetail="true"/>
+            <p:outputPanel style="padding: 0px 10px">
+                <p:breadCrumb lastItemDisabled="true">
+                    <p:menuitem value="Forums" url="/SuperForum-war/index.xhtml"/>
+                    <p:menuitem value="#{forumThreadManagedBean.forum.forumCategory.category}" url="forum-category.xhtml">
+                        <f:param name="forum-category" value="#{forumThreadManagedBean.forum.forumCategory.category}"/>
+                    </p:menuitem>
+                    <p:menuitem value="#{forumThreadManagedBean.forum.title}" url="forum.xhtml">
+                        <f:param name="fId" value="#{forumThreadManagedBean.forumId}"/>
+                    </p:menuitem>
+                    <p:menuitem value="#{forumThreadManagedBean.currentForumThread.title}" url="forum-thread.xhtml">
+                        <f:param name="threadId" value="#{forumThreadManagedBean.currentThreadId}"/>
+                        <f:param name="forumId" value="#{forumThreadManagedBean.forumId}"/>
+                    </p:menuitem>
+                    <p:menuitem value="Edit Thread"/>
+                </p:breadCrumb>
+                <p:fieldset legend="Edit #{forumThreadManagedBean.currentForumThread.title}" style="margin: 10px 0px">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <p:outputLabel value="Title: " for="@next"/>
+                        <p:inputText value="#{forumThreadManagedBean.title}"/>
+                        <p:commandButton value="Update Thread" icon="pi pi-pencil" 
+                                         action="#{forumThreadManagedBean.updateForumThread}">
+                            <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumThreadManagedBean.userId}"/>
+                        </p:commandButton>
+                        <p:commandButton value="Delete Thread" icon="pi pi-trash" 
+                                         action="#{forumThreadManagedBean.deleteThread}"
+                                         update=":edit-thread-form">
+                            <p:confirm header="Confirmation" message="Are you sure?" icon="pi pi-exclamation-triangle" />
+                            <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumThreadManagedBean.userId}"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                        </p:confirmDialog>   
+                    </h:panelGrid>
+                </p:fieldset>
+            </p:outputPanel>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="../layout/default-auth.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="title">
+        Create New Forum
+    </ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="forum-category" value="#{forumManagedBean.forumCategory}"/>
+        </f:metadata>
+        <h:form>
+            <p:panel header="Create New Forum" style="padding: 10px">
+                <p:breadCrumb lastItemDisabled="true">
+                    <p:menuitem value="Forums" url="/SuperForum-war/index.xhtml"/>
+                    <p:menuitem value="#{forumManagedBean.forumCategory}" url="forum-category.xhtml" rendered="#{not empty forumManagedBean.forumCategory}">
+                        <f:param name="forum-category" value="#{forumManagedBean.forumCategory}"/>
+                    </p:menuitem> 
+                    <p:menuitem value="Create New Forum"/>
+                </p:breadCrumb>
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:outputLabel value="Title" for="title-input"/>
+                    <p:inputText id="title-input" value="#{forumManagedBean.title}"/>
+
+                    <p:outputLabel value="Description" for="desc-input"/>
+                    <p:inputText id="desc-input" value="#{forumManagedBean.description}"/>
+
+                    <p:outputLabel value="Category"/>
+                    <p:selectOneMenu value="#{forumManagedBean.forumCategory}" editable="true">
+                        <c:forEach var="forumCategory" items="#{forumManagedBean.allForumCategories}">
+                            <f:selectItem itemLabel="#{forumCategory.category}" itemValue="#{forumCategory.category}"/>
+                        </c:forEach>
+                    </p:selectOneMenu>
+                    <p:commandButton value="Create Forum" icon="pi pi-plus-circle" 
+                                     action="#{forumManagedBean.createForum}">
+                        <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumManagedBean.ownerId}"/>
+                    </p:commandButton>
+                </h:panelGrid>
+
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

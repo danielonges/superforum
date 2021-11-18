@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="../layout/default-auth.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">
+        #{forumManagedBean.currentForum.title}
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="forum-form">
+            <style type="text/css"> 
+                .left {
+                    width: 30%;
+                }
+                .middle {
+                    width: 40%;
+                    padding-left: 25px;
+                }
+                .ui-panel-titlebar {
+                    padding: 25px;
+                }
+                .ui-panel-title {
+                    font-size: 2em;
+                    font-style: bold;
+                }
+            </style>
+            <f:metadata>
+                <f:viewParam name="fId" value="#{forumManagedBean.currentForumId}"/>
+                <f:event type="preRenderView" listener="#{forumManagedBean.loadCurrentForum}"/>
+            </f:metadata>
+            <p:breadCrumb lastItemDisabled="true" style="margin: 10px">
+                <p:menuitem value="Forums" url="/SuperForum-war/index.xhtml"/>
+                <p:menuitem value="#{forumManagedBean.currentForum.forumCategory.category}" url="forum-category.xhtml">
+                    <f:param name="forum-category" value="#{forumManagedBean.currentForum.forumCategory.category}"/>
+                </p:menuitem>
+                <p:menuitem value="#{forumManagedBean.currentForum.title}"/>
+            </p:breadCrumb>
+
+            <p:linkButton value="Edit Forum" icon="pi pi-pencil" style="margin: 10px" outcome="edit-forum.xhtml" rendered="#{authenticationManagedBean.authenticateRequest(null)}">
+                <f:param name="fId" value="#{forumManagedBean.currentForumId}"/>
+            </p:linkButton>
+
+            <p:panel header="#{forumManagedBean.currentForum.title}" style="padding: 10px">
+
+                <p:linkButton value="Create thread" icon="pi pi-plus" outcome="new-thread.xhtml" style="margin: 5px">
+                    <f:param name="userId" value="#{authenticationManagedBean.userId}"/>
+                    <f:param name="forumId" value="#{forumManagedBean.currentForumId}"/>
+                </p:linkButton>
+
+                <p:dataGrid var="forumThread" value="#{forumManagedBean.popularForumThreads}" columns="1" layout="grid"
+                            rows ="3" emptyMessage="No popular threads.">
+                    <f:facet name="header">
+                        Popular threads
+                    </f:facet>
+                    <p:outputPanel id="forum-threads">
+                        <h:panelGrid columns="3" style="width: 100%" cellpadding="5" columnClasses="left,middle">
+                            <p:outputPanel>
+                                <h2>
+                                    <p:link value="#{forumThread.title}" outcome="forum-thread.xhtml">
+                                        <f:param name="threadId" value="#{forumThread.id}" />
+                                        <f:param name="forumId" value="#{forumManagedBean.currentForumId}"/>
+                                    </p:link>
+                                </h2>
+                                <div style="padding-bottom: 5px; font-size: 0.9em">
+                                    <h:outputText value="#{forumThread.owner.username} • Created on "/>
+                                    <h:outputText value="#{forumThread.dateCreated}">
+                                        <f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+                                    </h:outputText><br/>
+                                </div>
+                            </p:outputPanel>
+
+                            <p:outputPanel>
+                                <div style="font-size: 0.9em">
+                                    <h:outputText value="Posts: #{forumThread.posts.size()}" /><br/>
+                                    <h:outputText value="Views: #{forumThread.views}" />
+                                </div>
+                            </p:outputPanel>
+
+                            <p:outputPanel>
+                                <h:outputText value="Closed by #{forumThread.closedBy.username}" style="font-style: italic; font-size: 0.9em" rendered="#{forumThread.isClosed}"/><br/>
+                                <p:commandLink value="#{forumThreadManagedBean.getCloseThreadLabel(forumThread.isClosed)} Thread"
+                                               rendered="#{authenticationManagedBean.authenticateRequest(null)}"
+                                               action="#{forumThreadManagedBean.closeThread(!forumThread.isClosed)}"
+                                               update=":forum-form">
+                                    <f:setPropertyActionListener value="#{forumThread.id}" target="#{forumThreadManagedBean.currentThreadId}"/>
+                                    <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumThreadManagedBean.closedById}"/>
+                                </p:commandLink>
+                            </p:outputPanel>
+                        </h:panelGrid>
+
+                    </p:outputPanel>
+                </p:dataGrid> 
+
+                <p:dataGrid var="forumThread" value="#{forumManagedBean.currentForum.forumThreads}" columns="1" layout="grid"
+                            rows ="6" emptyMessage="No threads in this forum yet." paginator="true" paginatorPosition="bottom" >
+                    <f:facet name="header">
+                        All threads
+                    </f:facet>
+                    <p:outputPanel id="forum-threads">
+                        <h:panelGrid columns="3" style="width: 100%" cellpadding="5" columnClasses="left,middle">
+                            <p:outputPanel>
+                                <h2>
+                                    <p:link value="#{forumThread.title}" outcome="forum-thread.xhtml" disabled="#{forumThread.isClosed}">
+                                        <f:param name="threadId" value="#{forumThread.id}" />
+                                        <f:param name="forumId" value="#{forumManagedBean.currentForumId}"/>
+                                    </p:link>
+                                </h2>
+                                <div style="padding-bottom: 5px; font-size: 0.9em">
+                                    <h:outputText value="#{forumThread.owner.username} • Created on "/>
+                                    <h:outputText value="#{forumThread.dateCreated}">
+                                        <f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+                                    </h:outputText><br/>
+                                </div>
+                            </p:outputPanel>
+
+                            <p:outputPanel >
+                                <div style="font-size: 0.9em">
+                                    <h:outputText value="Posts: #{forumThread.posts.size()}" /><br/>
+                                    <h:outputText value="Views: #{forumThread.views}" />
+                                </div>
+                            </p:outputPanel>
+                            
+                            <p:outputPanel>
+                                <h:outputText value="Closed by #{forumThread.closedBy.username}" style="font-style: italic; font-size: 0.9em" rendered="#{forumThread.isClosed}"/><br/>
+                                <p:commandLink value="#{forumThreadManagedBean.getCloseThreadLabel(forumThread.isClosed)} Thread"
+                                               rendered="#{authenticationManagedBean.authenticateRequest(null)}"
+                                               action="#{forumThreadManagedBean.closeThread(!forumThread.isClosed)}"
+                                               update=":forum-form">
+                                    <f:setPropertyActionListener value="#{forumThread.id}" target="#{forumThreadManagedBean.currentThreadId}"/>
+                                    <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumThreadManagedBean.closedById}"/>
+                                </p:commandLink>
+                            </p:outputPanel>
+                        </h:panelGrid>
+                    </p:outputPanel>
+                </p:dataGrid> 
+            </p:panel>
+            <p:commandButton value="Delete Forum" icon="pi pi-trash" style="margin: 15px" action="#{forumManagedBean.deleteForum}" rendered="#{authenticationManagedBean.authenticateRequest(null)}">
+                <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumManagedBean.adminId}"/>
+                <p:confirm header="Confirmation" message="Are you sure?" icon="pi pi-exclamation-triangle" />
+            </p:commandButton>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

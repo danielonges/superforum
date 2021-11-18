@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./layout/default-unauth.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        Register
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="unauth-form">
+            <p:growl id="growl" showDetail="true"/>
+            <p:fieldset legend="Register User" style="margin: 10px">
+                <h:panelGrid columns="2" cellpadding="5" style="margin: 25px">
+                    <p:outputLabel for="username-input" value="Username" />
+                    <p:inputText id="username-input" value="#{userManagedBean.username}" />
+
+                    <p:outputLabel for="username-input" value="Password" />
+                    <p:password id="password-input" value="#{userManagedBean.password}" feedback="true" />
+
+                    <p:outputLabel for="email-input" value="Email" />
+                    <p:inputText id="email-input" value="#{userManagedBean.email}" />
+
+                    <p:outputLabel for="bio-input" value="Bio" />
+                    <p:inputText id="bio-input" value="#{userManagedBean.bio}" />
+
+                    <p:commandButton value="Register" action="#{userManagedBean.register}" update=":unauth-form"/>
+                    <p:link value="Login" outcome="login.xhtml"/>
+
+                </h:panelGrid>
+            </p:fieldset>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
+

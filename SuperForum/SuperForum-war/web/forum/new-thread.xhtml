@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../layout/default-auth.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="title">
+        #{forumThreadManagedBean.forum.title} - Create New Thread
+    </ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="userId" value="#{forumThreadManagedBean.userId}"/>
+            <f:viewParam name="forumId" value="#{forumThreadManagedBean.forumId}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.loadForum}"/>
+        </f:metadata>
+        <h:form>
+            <p:panel header="Create New Thread" style="padding: 10px">
+                <p:breadCrumb lastItemDisabled="true">
+                    <p:menuitem value="Forums" url="/SuperForum-war/index.xhtml"/>
+                    <p:menuitem value="#{forumThreadManagedBean.forum.forumCategory.category}" url="forum-category.xhtml">
+                        <f:param name="forum-category" value="#{forumThreadManagedBean.forum.forumCategory.category}"/>
+                    </p:menuitem>
+                    <p:menuitem value="#{forumThreadManagedBean.forum.title}" url="forum.xhtml">
+                        <f:param name="fId" value="#{forumThreadManagedBean.forumId}"/>
+                    </p:menuitem>
+                    <p:menuitem value="Create New Thread"/>
+                </p:breadCrumb>
+                <h:panelGrid columns="1" cellpadding="5">
+                    <h:outputText value="Title"/>
+                    <p:inputText value="#{forumThreadManagedBean.title}"/>
+                    <h:outputText value="Message"/>
+                </h:panelGrid>
+                <p:textEditor widgetVar="editor1" value="#{forumThreadManagedBean.firstPostContent}" height="300" style="margin-bottom:10px" secure="false"/>
+                <p:commandButton value="Create thread" icon="pi pi-plus-circle" 
+                                 action="#{forumThreadManagedBean.createForumThread}"/>
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

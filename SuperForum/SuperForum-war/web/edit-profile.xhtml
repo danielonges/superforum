@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./layout/default-auth.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">
+        Edit Profile
+    </ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewParam name="userId" value="#{userManagedBean.userId}"/>
+            <f:event type="preRenderView" listener="#{userManagedBean.loadUser}"/>
+        </f:metadata>
+        <h:form id="user-profile-form" enctype="multipart/form-data">
+            <p:growl id="growl" showDetail="true"/>
+            <p:outputPanel style="padding: 0px 10px">
+                <p:breadCrumb lastItemDisabled="true">
+                    <p:menuitem value="Forums" url="/SuperForum-war/index.xhtml"/>
+                    <p:menuitem value="#{authenticationManagedBean.username}" url="user-profile.xhtml">
+                        <f:param name="userId" value="#{userManagedBean.userId}"/>
+                    </p:menuitem>    
+                    <p:menuitem value="Edit profile" url="/SuperForum-war/index.xhtml"/>
+                </p:breadCrumb>
+                <p:fieldset legend="Edit #{authenticationManagedBean.username}'s profile" style="margin: 10px 0px">
+                    <h:panelGrid columns="2" cellpadding="5" style="margin: 25px">
+                        <p:outputLabel value="Username: " for="@next"/>
+                        <p:inputText value="#{userManagedBean.username}"/>
+                        <p:outputLabel value="Email: " for="@next"/>
+                        <p:inputText value="#{userManagedBean.email}"/>
+                        <p:outputLabel value="Bio: " for="@next"/>
+                        <p:inputText value="#{userManagedBean.bio}"/>
+                        <p:outputLabel value="Profile Photo: " for="@next"/>
+                        <p:outputPanel>
+                            <p:graphicImage value="#{photoUtilManagedBean.profilePhoto}" height="150" width="150" cache="false" style="margin: 0px 0px 10px 0px" rendered="#{not empty userManagedBean.user.profilePhoto}">
+                                <f:param name="username" value="#{authenticationManagedBean.username}"/>
+                                <f:param name="userId" value="#{authenticationManagedBean.userId}"/>
+                            </p:graphicImage>
+                            <p:graphicImage value="./images/default-profile.png" height="150px" width="150px" rendered="#{empty userManagedBean.user.profilePhoto}" style="margin: 0px 0px 10px 0px"/>
+                            <br/>
+                            <p:fileUpload listener="#{photoUtilManagedBean.uploadProfilePhoto}" auto="true" skinSimple="true" update=":user-profile-form">
+                                <f:attribute name="username" value="#{authenticationManagedBean.username}"/>
+                                <f:attribute name="userId" value="#{authenticationManagedBean.userId}"/>
+                            </p:fileUpload>
+                            <p:commandButton value="Remove profile photo" icon="pi pi-times-circle"
+                                             action="#{photoUtilManagedBean.deletePhoto(authenticationManagedBean.username, authenticationManagedBean.userId)}"
+                                             update=":user-profile-form" style="margin: 10px 0px"/>
+                            <br/>
+                            <p:outputLabel value="Upload 150px by 150px image for best results!" style="font-size: 0.9em"/>
+                        </p:outputPanel>
+                    </h:panelGrid>
+                    <p:commandButton value="Update profile" action="#{userManagedBean.updateUser}" update=":user-profile-form"/>
+                </p:fieldset>
+            </p:outputPanel>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

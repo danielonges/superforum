@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./layout/default-auth.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">
+        SuperForum
+    </ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.setUserId(authenticationManagedBean.userId)}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.loadMyRecentForums}"/>
+        </f:metadata>
+        <style type="text/css">
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 5px 25px 25px;
+                /* with the exported variables from Nova and Luna Themes*/
+                border-bottom-color: var(--input-border-color, #A8A8A8);
+            }
+        </style>
+        <p:outputPanel>
+            <p:outputPanel style="margin: 0px 10px">
+                <p:outputLabel value="Welcome, #{authenticationManagedBean.username}" />
+                <p:linkButton value="Create Forum" icon="pi pi-plus" style="margin: 0px 10px" outcome="/forum/new-forum.xhtml" rendered="#{authenticationManagedBean.authenticateRequest(null)}"/>
+            </p:outputPanel> 
+
+            <p:dataGrid var="forumThread" value="#{forumThreadManagedBean.myRecentForumThreads}" columns="3" layout="grid"
+                        rows ="6" emptyMessage="You have no recent threads." paginator="true" paginatorPosition="bottom"
+                        paginatorAlwaysVisible="false" style="padding: 20px 0px">
+                <f:facet name="header">
+                    My recent threads
+                </f:facet>
+                <p:outputPanel>
+                    <h:panelGrid columns="3" cellpadding="20">
+                        <p:outputPanel>
+                            <h2>
+                                <p:link value="#{forumThread.title}" outcome="forum/forum-thread.xhtml">
+                                    <f:param name="threadId" value="#{forumThread.id}" />
+                                    <f:param name="forumId" value="#{forumManagedBean.getForumFromForumThread(forumThread).id}"/>
+                                </p:link>
+                            </h2>
+                            <div style="padding-bottom: 5px; font-size: 0.9em">
+                                <h:outputText value="#{forumThread.owner.username} • Created on "/>
+                                <h:outputText value="#{forumThread.dateCreated}">
+                                    <f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+                                </h:outputText><br/>
+                            </div>
+                        </p:outputPanel>
+
+                        <p:outputPanel >
+                            <div style="font-size: 0.9em">
+                                <h:outputText value="Posts: #{forumThread.posts.size()}" /><br/>
+                                <h:outputText value="Views: #{forumThread.views}" /><br/>
+                                <h:outputText value="Closed" style="font-style: italic" rendered="#{forumThread.isClosed}"/>
+                            </div>
+
+                        </p:outputPanel>
+                    </h:panelGrid>
+
+                </p:outputPanel>
+            </p:dataGrid> 
+
+            <p:dataView var="forum" value="#{forumManagedBean.forums}" layout="list" rows="6" paginatorAlwaysVisible="false" paginator="true">
+                <f:facet name="header" >
+                    <h:outputText value="All forums"/>
+                </f:facet>
+                <p:dataViewListItem>
+                    <p:outputPanel>
+                        <h2>
+                            <p:link value="#{forum.title}" outcome="/forum/forum.xhtml">
+                                <f:param name="fId" value="#{forum.id}" />
+                            </p:link>
+                        </h2>
+                        <h:outputText value="#{forum.owner.username}" style="font-style: italic; font-size: 0.9em"/>
+                        <h:panelGrid columns="2" cellpadding="5" style="font-size: 1em; margin-top: 5px">
+                            <h:outputText value="Category: " />
+                            <p:link value="#{forum.forumCategory.category}" outcome="/forum/forum-category.xhtml">
+                                <f:param name="forum-category" value="#{forum.forumCategory.category}" />
+                            </p:link>
+                            <h:outputText value="Description: " />
+                            <h:outputText value="#{forum.description}" />     
+                        </h:panelGrid>
+                    </p:outputPanel>
+                </p:dataViewListItem>
+            </p:dataView>
+        </p:outputPanel>
+
+
+    </ui:define>
+
+</ui:composition>

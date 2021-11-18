@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../layout/default-auth.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">
+        #{forumThreadManagedBean.currentForumThread.title}
+    </ui:define>
+
+    <ui:define name="content">
+        <style type="text/css"> 
+            .logo {
+                width: 20%;
+            }
+            .detail {
+                width: 80%;
+                padding-left: 20px;
+            }
+        </style>
+        <f:metadata>
+            <f:viewParam name="threadId" value="#{forumThreadManagedBean.currentThreadId}"/>
+            <f:viewParam name="forumId" value="#{forumThreadManagedBean.forumId}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.loadForum}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.loadCurrentForumThread}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.loadForumThreadDetails}"/>
+            <f:event type="preRenderView" listener="#{forumThreadManagedBean.incrementViewCount}"/>
+        </f:metadata>
+        <h:form id="thread-form">
+            <p:outputPanel style="padding: 0px 25px">
+                <h2>
+                    #{forumThreadManagedBean.currentForumThread.title}
+                </h2>
+                <h:outputText value="This thread has been closed by #{forumThreadManagedBean.currentForumThread.closedBy.username}"
+                              rendered="#{forumThreadManagedBean.isClosed}"
+                              style="font-style: italic; margin: 10px 10px 10px 0px; font-size: 0.9em"/>
+                <p:commandButton value="Reply to thread" icon="pi pi-pencil"
+                                 style="margin: 0px 15px 15px 0px" action="#{forumThreadManagedBean.openPostReply()}"
+                                 update=":thread-form" rendered="#{!forumThreadManagedBean.isClosed}"/>
+                <p:commandLink value="#{forumThreadManagedBean.getCloseThreadLabel(forumThreadManagedBean.isClosed)} Thread"
+                               rendered="#{authenticationManagedBean.authenticateRequest(null)}"
+                               action="#{forumThreadManagedBean.closeThread(!forumThreadManagedBean.isClosed)}"
+                               update="thread-form">
+                    <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumThreadManagedBean.closedById}"/>
+                </p:commandLink>
+                <br/>
+                <p:link outcome="edit-thread.xhtml" value="Edit Thread" rendered="#{authenticationManagedBean.authenticateRequest(forumThreadManagedBean.userId)}">
+                    <f:param name="threadId" value="#{forumThreadManagedBean.currentThreadId}"/>
+                    <f:param name="forumId" value="#{forumThreadManagedBean.forumId}"/>
+                </p:link>
+                <p:breadCrumb lastItemDisabled="true">
+                    <p:menuitem value="Forums" url="/SuperForum-war/index.xhtml"/>
+                    <p:menuitem value="#{forumThreadManagedBean.forum.forumCategory.category}" url="forum-category.xhtml">
+                        <f:param name="forum-category" value="#{forumThreadManagedBean.forum.forumCategory.category}"/>
+                    </p:menuitem>
+                    <p:menuitem value="#{forumThreadManagedBean.forum.title}" url="forum.xhtml">
+                        <f:param name="fId" value="#{forumThreadManagedBean.forumId}"/>
+                    </p:menuitem>
+                    <p:menuitem value="#{forumThreadManagedBean.currentForumThread.title}"/>
+                </p:breadCrumb>
+                <p:dataGrid var="post" value="#{forumThreadManagedBean.currentForumThread.posts}" emptyMessage="No posts yet." columns="1">
+                    <p:panel style="width: 100%">
+                        <f:facet name="header">
+                            <h:outputText value="#{post.dateCreated}">
+                                <f:convertDateTime type="date" pattern="dd/MM/yyyy, HH:mm" />
+                            </h:outputText>
+                        </f:facet>
+                        <f:facet name="footer">
+                            <h:outputText value="##{forumThreadManagedBean.currentForumThread.posts.indexOf(post) + 1}" style="font-size: 0.8em"/>
+                        </f:facet>
+                        <h:panelGrid columns="2" cellpadding="5" columnClasses="logo,detail">
+                            <p:panelGrid>
+                                <p:graphicImage value="#{photoUtilManagedBean.profilePhoto}" height="150px" width="150px" cache="false" rendered="#{not empty post.owner.profilePhoto}">
+                                    <f:param name="username" value="#{post.owner.username}"/>
+                                    <f:param name="userId" value="#{post.owner.id}"/>
+                                </p:graphicImage>
+                                <p:graphicImage value="../images/default-profile.png" height="150px" width="150px" rendered="#{empty post.owner.profilePhoto}"/>
+                                <br/>
+                                <h:outputText value="#{post.owner.username}" style="font-size: 0.9em"/>
+                                <br/>
+                                <p:commandLink value="Edit post"
+                                               rendered="#{authenticationManagedBean.authenticateRequest(post.owner.id)}"
+                                               update=":thread-form">
+                                    <f:setPropertyActionListener value="#{post.id}" target="#{forumThreadManagedBean.postToEditId}"/>
+                                    <f:setPropertyActionListener value="#{post.content}" target="#{forumThreadManagedBean.editPostContent}"/>
+                                </p:commandLink>
+                            </p:panelGrid>
+
+                            <p:panelGrid>
+                                <p:outputPanel rendered="#{post.id == forumThreadManagedBean.postToEditId}">
+                                    <p:textEditor id="in-post-editor" widgetVar="in-post-editor" value="#{forumThreadManagedBean.editPostContent}" height="300" style="margin-bottom:10px" secure="false"/>
+                                    <p:commandButton value="Update post" icon="pi pi-check" action="#{forumThreadManagedBean.updatePost}" update=":thread-form">
+                                        <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumThreadManagedBean.userId}"/>
+                                    </p:commandButton>
+                                    <p:commandButton value="Delete post" icon="pi pi-trash" action="#{forumThreadManagedBean.deletePost}" update=":thread-form">
+                                        <p:confirm header="Confirmation" message="Are you sure?" icon="pi pi-exclamation-triangle" />
+                                        <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumThreadManagedBean.userId}"/>
+                                    </p:commandButton>
+
+                                </p:outputPanel>
+                                <h:outputText value="#{post.content}" escape="false" rendered="#{post.id != forumThreadManagedBean.postToEditId}"/>
+                            </p:panelGrid>
+                        </h:panelGrid>
+
+
+                    </p:panel>
+                </p:dataGrid>
+                <p:commandButton value="Reply to thread" icon="pi pi-pencil" style="margin: 15px 0px" action="#{forumThreadManagedBean.openPostReply()}" update=":thread-form" rendered="#{!forumThreadManagedBean.isClosed}"/>
+                <p:outputPanel rendered="#{forumThreadManagedBean.showReplyEditor}">
+                    <p:textEditor id="post-editor" widgetVar="post-editor" value="#{forumThreadManagedBean.postContent}" height="300" style="margin-bottom:10px" secure="false"/>
+                    <p:commandButton value="Post reply" action="#{forumThreadManagedBean.createPostReply()}" icon="pi pi-comment" update=":thread-form">
+                        <f:setPropertyActionListener value="#{authenticationManagedBean.userId}" target="#{forumThreadManagedBean.userId}"/>
+                    </p:commandButton>
+                </p:outputPanel>
+            </p:outputPanel> 
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
