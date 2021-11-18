@@ -1,0 +1,39 @@
+// alert types
+export const SET_ALERT = 'SET_ALERT';
+export const REMOVE_ALERT = 'REMOVE_ALERT';
+
+// auth types
+export const USER_LOADED = 'USER_LOADED';
+export const AUTH_ERROR = 'AUTH_ERROR';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGIN_FAIL = 'LOGIN_FAIL';
+export const UPDATE_USER = 'UPDATE_USER';
+export const UPDATE_USER_FAIL = 'UPDATE_USER_FAIL';
+export const GET_USERS = 'GET_USERS';
+export const BLOCK_USER = 'BLOCK_USER';
+export const UNBLOCK_USER = 'UNBLOCK_USER';
+export const LOGOUT = 'LOGOUT';
+export const CLEAR_ERRORS = 'CLEAR_ERRORS';
+export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
+
+// forum types
+export const CREATE_FORUM = 'CREATE_FORUM';
+export const UPDATE_FORUM = 'UPDATE_FORUM';
+export const DELETE_FORUM = 'DELETE_FORUM';
+export const SET_FORUM = 'SET_FORUM';
+export const SET_FORUM_THREAD = 'SET_FORUM_THREAD';
+export const GET_FORUM_THREAD = 'GET_FORUM_THREAD';
+export const CREATE_FORUM_THREAD = 'CREATE_FORUM_THREAD';
+export const UPDATE_FORUM_THREAD = 'UPDATE_FORUM_THREAD';
+export const DELETE_FORUM_THREAD = 'DELETE_FORUM_THREAD';
+export const CLOSE_FORUM_THREAD = 'CLOSE_FORUM_THREAD';
+export const INCREMENT_VIEW_COUNT = 'INCREMENT_VIEW_COUNT';
+export const GET_ALL_FORUMS = 'GET_ALL_FORUMS';
+export const GET_ALL_FORUM_CATEGORIES = 'GET_ALL_FORUM_CATEGORIES';
+export const GET_USER_FORUM_THREADS = 'GET_USER_FORUM_THREADS';
+export const GET_FORUMS_BY_CATEGORY = 'GET_FORUMS_BY_CATEGORY';
+export const GET_FORUMS_BY_TITLE = 'GET_FORUMS_BY_TITLE';
+export const CREATE_POST = 'CREATE_POST';
+export const UPDATE_POST = 'UPDATE_POST';
+export const DELETE_POST = 'DELETE_POST';
+export const FORUM_ERROR = 'FORUM_ERROR';
